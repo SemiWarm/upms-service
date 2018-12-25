@@ -3,20 +3,27 @@ package com.pavis.upmsservice.service.impl;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.pavis.upmsservice.common.exception.ParamException;
 import com.pavis.upmsservice.common.utils.LevelUtils;
+import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.dto.SysAclDto;
 import com.pavis.upmsservice.dto.SysAclModuleDto;
 import com.pavis.upmsservice.dto.SysDeptDto;
+import com.pavis.upmsservice.model.SysAcl;
 import com.pavis.upmsservice.model.SysAclModule;
 import com.pavis.upmsservice.model.SysDept;
 import com.pavis.upmsservice.service.SysTreeService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,10 +31,15 @@ import java.util.List;
 public class SysTreeServiceImpl implements SysTreeService {
 
     @Autowired
+    private SysAclServiceImpl sysAclService;
+
+    @Autowired
     private SysDeptServiceImpl sysDeptService;
 
     @Autowired
     private SysAclModuleServiceImpl sysAclModuleService;
+
+    private static final String SUPER_ADMIN = "admin";
 
     @Override
     public List<SysDeptDto> deptTree() {
@@ -57,8 +69,82 @@ public class SysTreeServiceImpl implements SysTreeService {
 
     @Override
     public List<SysAclModuleDto> roleTree(Integer roleId) {
-        return null;
+        // 1. 当前用户的权限点列表
+        List<SysAcl> currentUserAclList = getAclListByUsername(PrincipalUtils.getCurrentUsername());
+
+        // 2. 当前角色的权限点列表
+        List<SysAcl> currentRoleAclList = getAclListByRoleId(roleId);
+
+        // 3. 当前系统所有权限点
+        List<SysAclDto> aclDtoList = Lists.newArrayList();
+
+        Set<Integer> currentUserAclIdSet = currentUserAclList.stream().map(SysAcl::getId).collect(Collectors.toSet());
+        Set<Integer> currentRoleAclIdSet = currentRoleAclList.stream().map(SysAcl::getId).collect(Collectors.toSet());
+
+        List<SysAcl> allAclList = sysAclService.list();
+        for (SysAcl acl : allAclList) {
+            SysAclDto dto = SysAclDto.adapt(acl);
+            if (currentUserAclIdSet.contains(acl.getId())) {
+                dto.setHasAcl(true);
+            }
+            if (currentRoleAclIdSet.contains(acl.getId())) {
+                dto.setChecked(true);
+            }
+            aclDtoList.add(dto);
+        }
+        return aclListToTree(aclDtoList);
     }
+
+    private List<SysAclModuleDto> aclListToTree(List<SysAclDto> aclDtoList) {
+        if (CollectionUtils.isEmpty(aclDtoList)) {
+            return Lists.newArrayList();
+        }
+        List<SysAclModuleDto> aclModuleDtoList = aclModuleTree();
+
+        Multimap<Integer, SysAclDto> aclDtoMultimap = ArrayListMultimap.create();
+        for(SysAclDto acl : aclDtoList) {
+            if (acl.getStatus() == 1) {
+                aclDtoMultimap.put(acl.getAclModuleId(), acl);
+            }
+        }
+        bindAclsWithOrder(aclModuleDtoList, aclDtoMultimap);
+        return aclModuleDtoList;
+    }
+
+    private void bindAclsWithOrder(List<SysAclModuleDto> aclModuleDtoList, Multimap<Integer, SysAclDto> aclDtoMultimap) {
+        if (CollectionUtils.isEmpty(aclModuleDtoList)) {
+            return;
+        }
+        for (SysAclModuleDto dto : aclModuleDtoList) {
+            List<SysAclDto> aclDtoList = (List<SysAclDto>)aclDtoMultimap.get(dto.getId());
+            if (CollectionUtils.isNotEmpty(aclDtoList)) {
+                aclDtoList.sort(Comparator.comparingInt(SysAcl::getSeq));
+                dto.setSubAclList(aclDtoList);
+            }
+            bindAclsWithOrder(dto.getSubAclModuleList(), aclDtoMultimap);
+        }
+    }
+
+    private List<SysAcl> getAclListByRoleId(Integer roleId) {
+        return sysAclService.getAclListByRoleId(roleId);
+    }
+
+    private List<SysAcl> getAclListByUsername(String username) {
+        if (StringUtils.isNotEmpty(username)) {
+            if (isSuperAdmin(username)) {
+                return sysAclService.list();
+            } else {
+                return sysAclService.getAclListByUsername(username);
+            }
+        } else {
+            throw new ParamException("用户不存在");
+        }
+    }
+
+    private boolean isSuperAdmin(String username) {
+        return StringUtils.containsIgnoreCase(username, SUPER_ADMIN);
+    }
+
 
     private List<SysAclModuleDto> aclModuleListToTree(List<SysAclModuleDto> aclModuleDtoList) {
         if (CollectionUtils.isEmpty(aclModuleDtoList)) {

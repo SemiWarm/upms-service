@@ -20,6 +20,12 @@ public class AclForm {
 
     private String url;
 
+    /**
+     * 1 查询
+     * 2 新增
+     * 3 更新
+     * 4 删除
+     */
     @NotNull(message = "权限点类型不能为空")
     private Integer type;
 

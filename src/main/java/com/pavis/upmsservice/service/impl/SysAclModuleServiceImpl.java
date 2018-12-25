@@ -38,6 +38,7 @@ public class SysAclModuleServiceImpl extends ServiceImpl<SysAclModuleMapper, Sys
                 .parentId(form.getParentId())
                 .name(form.getName())
                 .seq(form.getSeq())
+                .status(form.getStatus())
                 .remark(form.getRemark())
                 .build();
         aclModule.setLevel(LevelUtils.calculateLevel(getLevel(form.getParentId()), form.getParentId()));

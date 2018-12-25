@@ -1,0 +1,17 @@
+package com.pavis.upmsservice.form;
+
+import lombok.Data;
+
+import javax.validation.constraints.NotNull;
+
+@Data
+public class RoleAclForm {
+
+    private Integer id;
+
+    @NotNull(message = "角色id不能为空")
+    private Integer roleId;
+
+    @NotNull(message = "权限id不能为空")
+    private Integer aclId;
+}

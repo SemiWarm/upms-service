@@ -64,6 +64,16 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         return baseMapper.selectById(form.getId());
     }
 
+    @Override
+    public List<SysAcl> getAclListByUsername(String username) {
+        return baseMapper.selectByUsername(username);
+    }
+
+    @Override
+    public List<SysAcl> getAclListByRoleId(Integer roleId) {
+        return baseMapper.selectByRoleId(roleId);
+    }
+
     private boolean checkExist(Integer aclModuleId, String name) {
         QueryWrapper<SysAcl> wrapper = new QueryWrapper<>();
         Map<String, Object> map = new HashMap<>();

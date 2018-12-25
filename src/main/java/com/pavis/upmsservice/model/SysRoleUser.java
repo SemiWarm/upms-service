@@ -1,10 +1,14 @@
 package com.pavis.upmsservice.model;
 
-import lombok.Data;
+import lombok.*;
 
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SysRoleUser {
 
     private Integer id;
