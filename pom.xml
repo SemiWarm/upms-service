@@ -54,12 +54,10 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
-        <!--spring security 、oauth、jwt依赖-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-security</artifactId>
             <exclusions>
-                <!--旧版本 redis操作有问题-->
                 <exclusion>
                     <artifactId>spring-security-oauth2</artifactId>
                     <groupId>org.springframework.security.oauth</groupId>
