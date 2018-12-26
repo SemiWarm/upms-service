@@ -7,7 +7,7 @@ import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 import java.util.Set;
 
-public class IgnorePropertiesUtils {
+public class IgnoreUtils {
 
     public static String[] getNullPropertyNames(Object source) {
         BeanWrapper src = new BeanWrapperImpl(source);

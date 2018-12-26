@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pavis.upmsservice.common.exception.ParamException;
 import com.pavis.upmsservice.common.utils.IpUtils;
-import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.form.RoleUserForm;
 import com.pavis.upmsservice.mapper.SysRoleUserMapper;
 import com.pavis.upmsservice.model.SysRoleUser;
@@ -30,7 +30,7 @@ public class SysRoleUserServiceImpl extends ServiceImpl<SysRoleUserMapper, SysRo
         SysRoleUser roleUser = SysRoleUser.builder()
                 .roleId(form.getRoleId())
                 .userId(form.getUserId())
-                .operator(PrincipalUtils.getCurrentUsername())
+                .operator(AuthUtils.getCurrentUsername())
                 .operateIp(IpUtils.getIpAddr(request))
                 .operateTime(new Date())
                 .build();

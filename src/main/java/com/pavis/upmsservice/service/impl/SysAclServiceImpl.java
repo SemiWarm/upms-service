@@ -4,14 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Preconditions;
 import com.pavis.upmsservice.common.exception.ParamException;
-import com.pavis.upmsservice.common.utils.IgnorePropertiesUtils;
+import com.pavis.upmsservice.common.utils.IgnoreUtils;
 import com.pavis.upmsservice.common.utils.IpUtils;
-import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.form.AclForm;
 import com.pavis.upmsservice.mapper.SysAclMapper;
 import com.pavis.upmsservice.model.SysAcl;
 import com.pavis.upmsservice.service.SysAclService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +40,7 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
                 .remark(form.getRemark())
                 .build();
         acl.setCode(generateCode());
-        acl.setOperator(PrincipalUtils.getCurrentUsername());
+        acl.setOperator(AuthUtils.getCurrentUsername());
         acl.setOperateTime(new Date());
         acl.setOperateIp(IpUtils.getIpAddr(request));
         baseMapper.insert(acl);
@@ -56,8 +55,8 @@ public class SysAclServiceImpl extends ServiceImpl<SysAclMapper, SysAcl> impleme
         SysAcl before = baseMapper.selectById(form.getId());
         Preconditions.checkNotNull(before, "待更新的权限点不存在");
         SysAcl after = new SysAcl();
-        BeanUtils.copyProperties(form, after, IgnorePropertiesUtils.getNullPropertyNames(form));
-        after.setOperator(PrincipalUtils.getCurrentUsername());
+        org.springframework.beans.BeanUtils.copyProperties(form, after, IgnoreUtils.getNullPropertyNames(form));
+        after.setOperator(AuthUtils.getCurrentUsername());
         after.setOperateIp(IpUtils.getIpAddr(request));
         after.setOperateTime(new Date());
         baseMapper.updateById(after);

@@ -4,17 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Preconditions;
 import com.pavis.upmsservice.common.exception.ParamException;
-import com.pavis.upmsservice.common.utils.IgnorePropertiesUtils;
+import com.pavis.upmsservice.common.utils.IgnoreUtils;
 import com.pavis.upmsservice.common.utils.IpUtils;
 import com.pavis.upmsservice.common.utils.LevelUtils;
-import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.form.DeptForm;
 import com.pavis.upmsservice.mapper.SysDeptMapper;
 import com.pavis.upmsservice.model.SysDept;
 import com.pavis.upmsservice.service.SysDeptService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +38,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
                 .remark(form.getRemark())
                 .build();
         sysDept.setLevel(LevelUtils.calculateLevel(getLevel(form.getParentId()), form.getParentId()));
-        sysDept.setOperator(PrincipalUtils.getCurrentUsername());
+        sysDept.setOperator(AuthUtils.getCurrentUsername());
         sysDept.setOperateIp(IpUtils.getIpAddr(request));
         sysDept.setOperateTime(new Date());
         baseMapper.insert(sysDept);
@@ -54,9 +53,9 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
         SysDept before = baseMapper.selectById(form.getId());
         Preconditions.checkNotNull(before, "待更新的部门不存在");
         SysDept after = new SysDept();
-        BeanUtils.copyProperties(form, after, IgnorePropertiesUtils.getNullPropertyNames(form));
+        org.springframework.beans.BeanUtils.copyProperties(form, after, IgnoreUtils.getNullPropertyNames(form));
         after.setLevel(LevelUtils.calculateLevel(getLevel(form.getParentId()), form.getParentId()));
-        after.setOperator(PrincipalUtils.getCurrentUsername());
+        after.setOperator(AuthUtils.getCurrentUsername());
         after.setOperateIp(IpUtils.getIpAddr(request));
         after.setOperateTime(new Date());
 

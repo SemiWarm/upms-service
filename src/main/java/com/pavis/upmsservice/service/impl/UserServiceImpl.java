@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Preconditions;
 import com.pavis.upmsservice.common.exception.ParamException;
 import com.pavis.upmsservice.common.utils.IpUtils;
-import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.common.utils.PwdUtils;
 import com.pavis.upmsservice.form.PwdForm;
 import com.pavis.upmsservice.model.SysUser;
@@ -48,10 +48,10 @@ public class UserServiceImpl implements UserService {
         return new User(
                 user.getUsername(),
                 user.getPassword(),
-                BooleanUtils.toBoolean(user.getStatus()),
-                true,
-                true,
-                true,
+                BooleanUtils.toBoolean(user.getEnabled()),
+                BooleanUtils.toBoolean(user.getAccountNonExpired()),
+                BooleanUtils.toBoolean(user.getCredentialsNonExpired()),
+                BooleanUtils.toBoolean(user.getAccountNonLocked()),
                 AuthorityUtils.createAuthorityList("ROLE_ADMIN")
         );
     }
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
             SysUser current = userService.getById(form.getUserId());
             Preconditions.checkNotNull(current, "用户不存在");
             current.setPassword(PwdUtils.encrypt(form.getNewPwd()));
-            current.setOperator(PrincipalUtils.getCurrentUsername());
+            current.setOperator(AuthUtils.getCurrentUsername());
             current.setOperateIp(IpUtils.getIpAddr(request));
             current.setOperateTime(new Date());
             userService.updateById(current);

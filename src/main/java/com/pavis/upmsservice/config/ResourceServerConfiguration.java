@@ -14,8 +14,6 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         http
                 .authorizeRequests().anyRequest().authenticated()
                 .and()
-                .logout()
-                .and()
                 .csrf().disable();
     }
 }

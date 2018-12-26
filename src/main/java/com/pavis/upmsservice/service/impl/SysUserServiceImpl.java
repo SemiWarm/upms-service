@@ -4,16 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Preconditions;
 import com.pavis.upmsservice.common.exception.ParamException;
-import com.pavis.upmsservice.common.utils.IgnorePropertiesUtils;
+import com.pavis.upmsservice.common.utils.IgnoreUtils;
 import com.pavis.upmsservice.common.utils.IpUtils;
-import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.common.utils.PwdUtils;
 import com.pavis.upmsservice.form.UserForm;
 import com.pavis.upmsservice.mapper.SysUserMapper;
 import com.pavis.upmsservice.model.SysUser;
 import com.pavis.upmsservice.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +44,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
                 .remark(form.getRemark())
                 .deptId(form.getDeptId())
                 .status(form.getStatus())
+                .enabled(1)
+                .accountNonLocked(1)
+                .accountNonExpired(1)
+                .credentialsNonExpired(1)
                 .build();
-        sysUser.setOperator(PrincipalUtils.getCurrentUsername());
+        sysUser.setOperator(AuthUtils.getCurrentUsername());
         sysUser.setOperateIp(IpUtils.getIpAddr(request));
         sysUser.setOperateTime(new Date());
         // todo sendEmail通知用户初始密码,如果失败了则认为是无法创建成功
@@ -89,8 +92,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         SysUser before = baseMapper.selectById(form.getId());
         Preconditions.checkNotNull(before, "待更新的用户不存在");
         SysUser after = new SysUser();
-        BeanUtils.copyProperties(form, after, IgnorePropertiesUtils.getNullPropertyNames(form));
-        after.setOperator(PrincipalUtils.getCurrentUsername());
+        org.springframework.beans.BeanUtils.copyProperties(form, after, IgnoreUtils.getNullPropertyNames(form));
+        after.setOperator(AuthUtils.getCurrentUsername());
         after.setOperateIp(IpUtils.getIpAddr(request));
         after.setOperateTime(new Date());
         baseMapper.updateById(after);

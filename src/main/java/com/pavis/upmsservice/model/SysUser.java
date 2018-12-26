@@ -19,6 +19,10 @@ public class SysUser {
     private String remark;
     private Integer deptId;
     private Integer status;
+    private Integer enabled;
+    private Integer accountNonLocked;
+    private Integer accountNonExpired;
+    private Integer credentialsNonExpired;
     private String operator;
     private Date operateTime;
     private String operateIp;

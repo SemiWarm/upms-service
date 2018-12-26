@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.pavis.upmsservice.common.exception.ParamException;
 import com.pavis.upmsservice.common.utils.LevelUtils;
-import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.dto.SysAclDto;
 import com.pavis.upmsservice.dto.SysAclModuleDto;
 import com.pavis.upmsservice.dto.SysDeptDto;
@@ -70,7 +70,7 @@ public class SysTreeServiceImpl implements SysTreeService {
     @Override
     public List<SysAclModuleDto> roleTree(Integer roleId) {
         // 1. 当前用户的权限点列表
-        List<SysAcl> currentUserAclList = getAclListByUsername(PrincipalUtils.getCurrentUsername());
+        List<SysAcl> currentUserAclList = getAclListByUsername(AuthUtils.getCurrentUsername());
 
         // 2. 当前角色的权限点列表
         List<SysAcl> currentRoleAclList = getAclListByRoleId(roleId);

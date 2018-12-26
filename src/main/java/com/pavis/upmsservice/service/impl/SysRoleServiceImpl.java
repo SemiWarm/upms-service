@@ -4,14 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.base.Preconditions;
 import com.pavis.upmsservice.common.exception.ParamException;
-import com.pavis.upmsservice.common.utils.IgnorePropertiesUtils;
+import com.pavis.upmsservice.common.utils.IgnoreUtils;
 import com.pavis.upmsservice.common.utils.IpUtils;
-import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.form.RoleForm;
 import com.pavis.upmsservice.mapper.SysRoleMapper;
 import com.pavis.upmsservice.model.SysRole;
 import com.pavis.upmsservice.service.SysRoleService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +36,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
                 .type(form.getType())
                 .remark(form.getRemark())
                 .build();
-        role.setOperator(PrincipalUtils.getCurrentUsername());
+        role.setOperator(AuthUtils.getCurrentUsername());
         role.setOperateIp(IpUtils.getIpAddr(request));
         role.setOperateTime(new Date());
         baseMapper.insert(role);
@@ -54,8 +53,8 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         Preconditions.checkNotNull(before, "待更新的角色不存在");
 
         SysRole after = new SysRole();
-        BeanUtils.copyProperties(form, after, IgnorePropertiesUtils.getNullPropertyNames(form));
-        after.setOperator(PrincipalUtils.getCurrentUsername());
+        org.springframework.beans.BeanUtils.copyProperties(form, after, IgnoreUtils.getNullPropertyNames(form));
+        after.setOperator(AuthUtils.getCurrentUsername());
         after.setOperateIp(IpUtils.getIpAddr(request));
         after.setOperateTime(new Date());
         baseMapper.updateById(after);

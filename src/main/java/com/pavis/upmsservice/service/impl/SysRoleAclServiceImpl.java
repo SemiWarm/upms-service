@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pavis.upmsservice.common.exception.ParamException;
 import com.pavis.upmsservice.common.utils.IpUtils;
-import com.pavis.upmsservice.common.utils.PrincipalUtils;
+import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.form.RoleAclForm;
 import com.pavis.upmsservice.mapper.SysRoleAclMapper;
 import com.pavis.upmsservice.model.SysRoleAcl;
@@ -31,7 +31,7 @@ public class SysRoleAclServiceImpl extends ServiceImpl<SysRoleAclMapper, SysRole
         SysRoleAcl roleAcl = SysRoleAcl.builder()
                 .roleId(form.getRoleId())
                 .aclId(form.getAclId())
-                .operator(PrincipalUtils.getCurrentUsername())
+                .operator(AuthUtils.getCurrentUsername())
                 .operateIp(IpUtils.getIpAddr(request))
                 .operateTime(new Date())
                 .build();
