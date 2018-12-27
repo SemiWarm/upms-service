@@ -2,14 +2,18 @@ package com.pavis.upmsservice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.pavis.upmsservice.common.exception.ParamException;
 import com.pavis.upmsservice.common.utils.IpUtils;
 import com.pavis.upmsservice.common.utils.AuthUtils;
 import com.pavis.upmsservice.common.utils.PwdUtils;
 import com.pavis.upmsservice.form.PwdForm;
+import com.pavis.upmsservice.model.SysAcl;
+import com.pavis.upmsservice.model.SysRole;
 import com.pavis.upmsservice.model.SysUser;
 import com.pavis.upmsservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +26,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -37,6 +40,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private SysUserServiceImpl userService;
 
+    @Autowired
+    private SysRoleServiceImpl roleService;
+
+    @Autowired
+    private SysAclServiceImpl aclService;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
@@ -45,6 +54,19 @@ public class UserServiceImpl implements UserService {
         wrapper.allEq(map);
         SysUser user = userService.getOne(wrapper);
         Preconditions.checkNotNull(user, "用户不存在");
+        List<SysRole> roleList = roleService.getRoleListByUsername(username);
+        List<SysAcl> aclList = aclService.getAclListByUsername(username);
+        Set<String> roles = Sets.newHashSet();
+        Set<String> acls = Sets.newHashSet();
+        if (CollectionUtils.isNotEmpty(roleList)) {
+            roles = roleList.stream().map(SysRole::getName).collect(Collectors.toSet());
+        } else {
+            roles.add("ROLE_USER");
+        }
+        if (CollectionUtils.isNotEmpty(aclList)) {
+            acls = aclList.stream().map(SysAcl::getUrl).collect(Collectors.toSet());
+        }
+        roles.addAll(acls);
         return new User(
                 user.getUsername(),
                 user.getPassword(),
@@ -52,7 +74,7 @@ public class UserServiceImpl implements UserService {
                 BooleanUtils.toBoolean(user.getAccountNonExpired()),
                 BooleanUtils.toBoolean(user.getCredentialsNonExpired()),
                 BooleanUtils.toBoolean(user.getAccountNonLocked()),
-                AuthorityUtils.createAuthorityList("ROLE_ADMIN")
+                AuthorityUtils.commaSeparatedStringToAuthorityList(StringUtils.join(roles, ","))
         );
     }
 

@@ -7,13 +7,13 @@
                  left join sys_role_user sru on su.id = sru.user_id
                  left join sys_role_acl sra on sru.role_id = sra.role_id
                  left join sys_acl sa on sra.acl_id = sa.id
-        where su.username = #{username};
+        where su.username = #{username}
     </select>
 
     <select id="selectByRoleId" resultType="SysAcl">
         select sa.*
         from sys_role_acl sra
                  left join sys_acl sa on sra.acl_id = sa.id
-        where sra.role_id = #{roleId};
+        where sra.role_id = #{roleId}
     </select>
 </mapper>

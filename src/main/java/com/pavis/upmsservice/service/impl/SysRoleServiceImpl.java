@@ -61,6 +61,11 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
         return baseMapper.selectById(after.getId());
     }
 
+    @Override
+    public List<SysRole> getRoleListByUsername(String username) {
+        return baseMapper.selectByUsername(username);
+    }
+
     private boolean checkExist(String name) {
         QueryWrapper<SysRole> wrapper = new QueryWrapper<>();
         Map<String, Object> map = new HashMap<>();
