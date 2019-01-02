@@ -6,6 +6,6 @@
         from sys_user su
                  left join sys_role_user sru on su.id = sru.user_id
                  left join sys_role sr on sru.role_id = sr.id
-        where su.username = #{username}
+        where su.username = #{username} and sr.name is not null
     </select>
 </mapper>

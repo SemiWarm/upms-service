@@ -27,20 +27,10 @@ public class UpmsServiceApplicationTests {
 
     @Test
     public void initAdmin() {
-        SysUser admin = SysUser.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("123456"))
-                .telephone("18082315083")
-                .email("admin@s-privacy.com")
-                .remark("超级管理员")
-                .deptId(1)
-                .status(1)
-                .operator("admin")
-                .operateIp("0:0:0:0:0:0:0:1")
-                .operateTime(new Date())
-                .build();
-        userMapper.insert(admin);
-
+        SysUser admin = userMapper.selectById(1);
+        admin.setUsername("admin");
+        admin.setPassword(passwordEncoder.encode("123456"));
+        userMapper.updateById(admin);
 
     }
 

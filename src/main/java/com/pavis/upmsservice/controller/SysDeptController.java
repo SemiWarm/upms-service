@@ -32,7 +32,7 @@ public class SysDeptController {
         return ResUtils.ok(sysDeptService.add(form, request));
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/tree")
     public Response deptTree() {
         return ResUtils.ok(sysTreeService.deptTree());

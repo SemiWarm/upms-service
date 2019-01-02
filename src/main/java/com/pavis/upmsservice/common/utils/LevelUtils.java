@@ -1,5 +1,6 @@
 package com.pavis.upmsservice.common.utils;
 
+
 import org.apache.commons.lang3.StringUtils;
 
 public class LevelUtils {

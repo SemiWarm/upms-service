@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.pavis.upmsservice.common.exception.ParamException;
-import com.pavis.upmsservice.common.utils.IpUtils;
 import com.pavis.upmsservice.common.utils.AuthUtils;
+import com.pavis.upmsservice.common.utils.IpUtils;
 import com.pavis.upmsservice.common.utils.PwdUtils;
 import com.pavis.upmsservice.form.PwdForm;
 import com.pavis.upmsservice.model.SysAcl;
@@ -74,8 +74,7 @@ public class UserServiceImpl implements UserService {
                 BooleanUtils.toBoolean(user.getAccountNonExpired()),
                 BooleanUtils.toBoolean(user.getCredentialsNonExpired()),
                 BooleanUtils.toBoolean(user.getAccountNonLocked()),
-                AuthorityUtils.commaSeparatedStringToAuthorityList(StringUtils.join(roles, ","))
-        );
+                AuthorityUtils.commaSeparatedStringToAuthorityList(StringUtils.join(roles, ",")));
     }
 
     @Override
