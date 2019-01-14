@@ -14,14 +14,9 @@ import com.pavis.upmsservice.model.SysUser;
 import com.pavis.upmsservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,8 +29,8 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = Exception.class)
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private DefaultTokenServices defaultTokenServices;
+    // @Autowired
+    // private DefaultTokenServices defaultTokenServices;
 
     @Autowired
     private SysUserServiceImpl userService;
@@ -47,7 +42,7 @@ public class UserServiceImpl implements UserService {
     private SysAclServiceImpl aclService;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public Map<String, Object> loadUserByUsername(String username) throws UsernameNotFoundException {
         QueryWrapper<SysUser> wrapper = new QueryWrapper<>();
         Map<String, Object> map = new HashMap<>();
         map.put("username", username);
@@ -67,14 +62,16 @@ public class UserServiceImpl implements UserService {
             acls = aclList.stream().map(SysAcl::getUrl).collect(Collectors.toSet());
         }
         roles.addAll(acls);
-        return new User(
-                user.getUsername(),
-                user.getPassword(),
-                BooleanUtils.toBoolean(user.getEnabled()),
-                BooleanUtils.toBoolean(user.getAccountNonExpired()),
-                BooleanUtils.toBoolean(user.getCredentialsNonExpired()),
-                BooleanUtils.toBoolean(user.getAccountNonLocked()),
-                AuthorityUtils.commaSeparatedStringToAuthorityList(StringUtils.join(roles, ",")));
+        Map<String, Object> result = new HashMap<>();
+
+        result.put("username", user.getUsername());
+        result.put("password", user.getPassword());
+        result.put("enabled", user.getEnabled());
+        result.put("accountNonExpired", user.getAccountNonExpired());
+        result.put("credentialsNonExpired", user.getCredentialsNonExpired());
+        result.put("accountNonLocked", user.getAccountNonLocked());
+        result.put("roles", StringUtils.join(roles, ","));
+        return result;
     }
 
     @Override
@@ -87,9 +84,9 @@ public class UserServiceImpl implements UserService {
             current.setOperateIp(IpUtils.getIpAddr(request));
             current.setOperateTime(new Date());
             userService.updateById(current);
-            String tokenValue = StringUtils.substringAfter(request.getQueryString(), "=");
+            // String tokenValue = StringUtils.substringAfter(request.getQueryString(), "=");
             // 清空当前token
-            defaultTokenServices.revokeToken(tokenValue);
+            // defaultTokenServices.revokeToken(tokenValue);
         } else {
             throw new ParamException("两次密码不一致");
         }

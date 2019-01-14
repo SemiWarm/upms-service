@@ -22,6 +22,16 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+security:
+  oauth2:
+    client:
+      client-id: pavis-web-service
+      client-secret: 123456
+      access-token-uri: http://192.168.1.123:8090/oauth/token
+      user-authorization-uri: http://192.168.1.123:8090/oauth/authorize
+    resource:
+      # 很重要
+      token-info-uri: http://192.168.1.123:8090/oauth/check_token
 logging:
   level:
     org.springframework.cloud: debug

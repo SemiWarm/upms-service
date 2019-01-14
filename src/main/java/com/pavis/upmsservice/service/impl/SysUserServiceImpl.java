@@ -34,11 +34,11 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         }
 
         // 生成随机密码
-        String password = PwdUtils.randomPassword();
-        log.info("password:{}", password);
+        // String password = PwdUtils.randomPassword();
+        // log.info("password:{}", password);
         SysUser sysUser = SysUser.builder()
                 .username(form.getUsername())
-                .password(PwdUtils.encrypt(password))
+                .password(PwdUtils.encrypt("123456"))
                 .telephone(form.getTelephone())
                 .email(form.getEmail())
                 .remark(form.getRemark())
