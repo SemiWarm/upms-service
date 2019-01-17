@@ -22,6 +22,11 @@ public class SysRoleController {
     @Autowired
     private SysTreeServiceImpl sysTreeService;
 
+    @GetMapping("/list")
+    public Response deptRoleList() {
+        return ResUtils.ok(sysRoleService.list());
+    }
+
     @PostMapping("/add")
     public Response addRole(@Valid RoleForm form, HttpServletRequest request) {
         return ResUtils.ok(sysRoleService.add(form, request));

@@ -24,6 +24,11 @@ public class SysAclModuleController {
     @Autowired
     private SysTreeServiceImpl sysTreeService;
 
+    @GetMapping("/list")
+    public Response deptAclModuleList() {
+        return ResUtils.ok(sysAclModuleService.list());
+    }
+
     @PostMapping("/add")
     public Response addAclModule(@Valid AclModuleForm form, HttpServletRequest request) {
         return ResUtils.ok(sysAclModuleService.add(form, request));

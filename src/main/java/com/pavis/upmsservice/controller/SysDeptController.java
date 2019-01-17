@@ -7,7 +7,6 @@ import com.pavis.upmsservice.service.impl.SysDeptServiceImpl;
 import com.pavis.upmsservice.service.impl.SysTreeServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +26,16 @@ public class SysDeptController {
     @Autowired
     private SysTreeServiceImpl sysTreeService;
 
+    @GetMapping("/list")
+    public Response deptList() {
+        return ResUtils.ok(sysDeptService.list());
+    }
+
     @PostMapping("/add")
     public Response addDept(@Valid DeptForm form, HttpServletRequest request) {
         return ResUtils.ok(sysDeptService.add(form, request));
     }
 
-    @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/tree")
     public Response deptTree() {
         return ResUtils.ok(sysTreeService.deptTree());

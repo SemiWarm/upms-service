@@ -5,6 +5,7 @@ import com.pavis.upmsservice.common.utils.ResUtils;
 import com.pavis.upmsservice.form.UserForm;
 import com.pavis.upmsservice.service.impl.SysUserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,11 @@ public class SysUserController {
 
     @Autowired
     private SysUserServiceImpl sysUserService;
+
+    @GetMapping("/list")
+    public Response deptSysUserList() {
+        return ResUtils.ok(sysUserService.list());
+    }
 
     @PostMapping("/add")
     public Response addUser(@Valid UserForm form, HttpServletRequest request) {

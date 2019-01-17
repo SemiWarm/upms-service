@@ -5,6 +5,7 @@ import com.pavis.upmsservice.common.utils.ResUtils;
 import com.pavis.upmsservice.form.AclForm;
 import com.pavis.upmsservice.service.impl.SysAclServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,11 @@ public class SysAclController {
 
     @Autowired
     private SysAclServiceImpl sysAclService;
+
+    @GetMapping("/list")
+    public Response aclList() {
+        return ResUtils.ok(sysAclService.list());
+    }
 
     @PostMapping("/add")
     public Response addAcl(@Valid AclForm form, HttpServletRequest request) {
