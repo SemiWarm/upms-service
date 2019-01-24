@@ -1,23 +1,12 @@
-spring:
-  cloud:
-    config:
-      label: master
-      profile: test
-      discovery:
-        enabled: true
-        service-id: pavis-config-server
-    bus:
-      trace:
-        enabled: true
 eureka:
   instance:
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
     prefer-ip-address: true
-    ip-address: 188.131.193.107
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
   client:
     service-url:
-      defaultZone: http://188.131.193.107:8761/eureka/
+      defaultZone: http://${spring.cloud.client.ip-address}:8761/eureka/
 management:
   endpoints:
     web:
